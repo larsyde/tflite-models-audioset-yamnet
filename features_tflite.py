@@ -10,6 +10,7 @@
 import tensorflow as tf
 import numpy as np
 import fractions
+import math
 
 
 def _dft_matrix(dft_length):
@@ -93,7 +94,7 @@ def _fixed_frame(signal, frame_length, frame_step, first_axis=False):
         # work if we want the last of 1 axes.
         gather_axis = len(outer_dimensions)
 
-    subframe_length = fractions.gcd(frame_length, frame_step)  # pylint: disable=deprecated-method
+    subframe_length = math.gcd(frame_length, frame_step)  # pylint: disable=deprecated-method
     subframes_per_frame = frame_length // subframe_length
     subframes_per_hop = frame_step // subframe_length
     num_subframes = length_samples // subframe_length

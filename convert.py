@@ -40,6 +40,8 @@ def main():
     # Convert the model
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.experimental_new_converter = True
+    converter.experimental_new_dynamic_range_quantizer = True
+    converter.experimental_new_converter = True
     tflite_model = converter.convert()
     open("yamnet.tflite", "wb").write(tflite_model)
 

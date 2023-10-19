@@ -25,20 +25,21 @@ import tensorflow as tf
 
 import params
 import yamnet as yamnet_model
+import time
 
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
-def main(argv):
-  assert argv
-
-  graph = tf.Graph()
-  with graph.as_default():
-    yamnet = yamnet_model.yamnet_frames_model(params)
-    yamnet.load_weights('yamnet.h5')
-  yamnet_classes = yamnet_model.class_names('yamnet_class_map.csv')
-
-  for file_name in argv:
+def process_audio(file_name):
+    graph = tf.Graph()
+    with graph.as_default():
+      yamnet = yamnet_model.yamnet_frames_model(params)
+      yamnet.load_weights('yamnet.h5')
+    yamnet_classes = yamnet_model.class_names('yamnet_class_map.csv')
+  
     # Decode the WAV file.
-    wav_data, sr = sf.read(file_name, dtype=np.int16)
+    print(f"Processing {file_name}...")
+    wav_data, sr = sf.read(file_name, dtype=np.int16, samplerate=16000, channels=1, subtype='PCM_16')
     assert wav_data.dtype == np.int16, 'Bad sample type: %r' % wav_data.dtype
     waveform = wav_data / 32768.0  # Convert to [-1.0, +1.0]
 
@@ -62,6 +63,35 @@ def main(argv):
           '\n'.join('  {:12s}: {:.3f}'.format(yamnet_classes[i], prediction[i])
                     for i in top5_i))
 
+class Watcher:
+
+    def __init__(self, directory=".", handler=FileSystemEventHandler()):
+        self.observer = Observer()
+        self.handler = handler
+        self.directory = directory
+
+    def run(self):
+        self.observer.schedule(
+            self.handler, self.directory, recursive=True)
+        self.observer.start()
+        print("\nWatcher Running in {}/\n".format(self.directory))
+        try:
+            while True:
+                time.sleep(1)
+        except:
+            self.observer.stop()
+        self.observer.join()
+        print("\nWatcher Terminated\n")
+        
+class MyHandler(FileSystemEventHandler):
+
+      def on_any_event(self, event):
+        print(event)
+        if event.event_type == "created":
+            process_audio(event.src_path)
+
+w = Watcher("G:\\temp\\ef03cba74b5fdb0b12e810f54919925d", MyHandler())
+w.run()
 
 if __name__ == '__main__':
-  main(sys.argv[1:])
+  process_audio(sys.argv[1:])

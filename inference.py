@@ -96,13 +96,13 @@ class Watcher:
         
 class MyHandler(FileSystemEventHandler):
 
-      def on_any_event(self, event):
-        print(event)
-        if event.event_type == "created":
-            process_audio(event.src_path)
+    def on_any_event(self, event):
+      print(event)
+      if event.event_type == "created":
+          process_audio(event.src_path)
             
 def streamlit_writer():
-  # TODO read the result files and display them pretty
+    # TODO read the result files and display them pretty
     st.write("Hello World")
     time.sleep(2)
 

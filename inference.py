@@ -102,7 +102,7 @@ class MyHandler(FileSystemEventHandler):
             process_audio(event.src_path)
             
 def streamlit_writer():
-  # read the result files and display them pretty
+  # TODO read the result files and display them pretty
     st.write("Hello World")
     time.sleep(2)
 

@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "streamlit",
+            "type": "python",
+            "request": "launch",
+            "program": ".\\venv\\Scripts\\streamlit.exe",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "run",
+                "${file}"
+            ]
+        }
+    ]
+}

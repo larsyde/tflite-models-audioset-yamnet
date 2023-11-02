@@ -17,6 +17,7 @@
 from __future__ import division, print_function
 
 import sys
+import threading
 
 import numpy as np
 import resampy
@@ -26,9 +27,14 @@ import tensorflow as tf
 import params
 import yamnet as yamnet_model
 import time
+import streamlit as st
+import pandas as pd
+
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from threading import Thread
+from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
 def process_audio(file_name):
     graph = tf.Graph()
@@ -58,10 +64,15 @@ def process_audio(file_name):
     # Average them along time to get an overall classifier output for the clip.
     prediction = np.mean(scores, axis=0)
     # Report the highest-scoring classes and their scores.
-    top5_i = np.argsort(prediction)[::-1][:5]
-    print(file_name, ':\n' + 
-          '\n'.join('  {:12s}: {:.3f}'.format(yamnet_classes[i], prediction[i])
-                    for i in top5_i))
+    top10_i = np.argsort(prediction)[::-1][:10]
+    output =  ':\n' + '\n'.join('  {:12s}: {:.3f}'.format(yamnet_classes[i], prediction[i]) for i in top10_i)
+    print(file_name, output)
+    timestamp = str(int(time.time()))
+    filename = f"g:\\temp\{timestamp}.txt"
+    with open(filename, 'w') as file:
+    # Write two lines to the file
+      file.write(file_name)
+      file.write(output)
 
 class Watcher:
 
@@ -89,9 +100,20 @@ class MyHandler(FileSystemEventHandler):
         print(event)
         if event.event_type == "created":
             process_audio(event.src_path)
+            
+def streamlit_writer():
+  # read the result files and display them pretty
+    st.write("Hello World")
+    time.sleep(2)
+
+
+t = threading.Thread(target=streamlit_writer)
+add_script_run_ctx(t)
+t.start()
 
 w = Watcher("G:\\temp\\ef03cba74b5fdb0b12e810f54919925d", MyHandler())
 w.run()
+
 
 if __name__ == '__main__':
   process_audio(sys.argv[1:])

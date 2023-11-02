@@ -1,0 +1,6 @@
+G:\temp\ef03cba74b5fdb0b12e810f54919925d\2023-10-29-13-54-22-53.raw:
+  Field recording: nan
+  Drum roll   : nan
+  Timpani     : nan
+  Tabla       : nan
+  Cymbal      : nan

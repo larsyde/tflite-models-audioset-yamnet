@@ -1,0 +1,6 @@
+G:\temp\ef03cba74b5fdb0b12e810f54919925d\2023-10-29-13-54-07-51.raw:
+  Sound effect: 0.527
+  Explosion   : 0.334
+  Gunshot, gunfire: 0.251
+  Fusillade   : 0.047
+  Burst, pop  : 0.042

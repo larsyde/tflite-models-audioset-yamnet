@@ -157,6 +157,6 @@ if __name__ == '__main__':
     
   w1.join()
   w2.join()
-  
+  t.join()
   
   process_audio(sys.argv[1:])

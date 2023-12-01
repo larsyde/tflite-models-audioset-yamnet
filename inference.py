@@ -80,8 +80,7 @@ class Watcher:
         self.observer = Observer()
         self.handler = handler
         self.directory = directory
-        add_script_run_ctx(t) # TODO: maybe a question to streamlit guys about how to do this or a separate thread every time to do ST display operation
-
+       
     def start(self):
         self.observer.schedule(self.handler, self.directory, recursive=False)
         self.observer.start()
@@ -104,37 +103,43 @@ class Watcher:
     #         self.observer.stop()
     #     self.observer.join()
     #     print("\nWatcher Terminated\n")
+              
         
-        
+result_filename = ""
+
 def process_result(filename):
-    st.write(filename)
+  result_filename=filename
         
 class SoundFileHandler(FileSystemEventHandler):
 
     def on_any_event(self, event):
-      print(event)
       if event.event_type == "created":
           process_audio(event.src_path)
             
 class ResultFileHandler(FileSystemEventHandler):
 
     def on_any_event(self, event):
-      print(event)
       if event.event_type == "created":
           process_result(event.src_path)
             
             
-def streamlit_writer():
-    # TODO read the result files and display them pretty
-    st.write("Hello World")
-    time.sleep(2)
 
-
-t = threading.Thread(target=streamlit_writer)
-add_script_run_ctx(t)
-#t.start()
+def printer_thread():
+  while True:
+    time.sleep(1)
+    if result_filename != "":
+      print("printing")
+      st.write(filename)
+      result_filename = ""
+    
 
 if __name__ == '__main__':
+  
+  result_filename = str()
+
+  t = Thread(target=printer_thread)
+  add_script_run_ctx(t)
+  t.start()
   
   w1 = Watcher("G:\\temp\\322717bbfdd19e262e6c2c9ad8296e2c", SoundFileHandler())
   w2 = Watcher("g:\\temp", ResultFileHandler())

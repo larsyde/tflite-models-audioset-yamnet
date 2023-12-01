@@ -80,26 +80,49 @@ class Watcher:
         self.observer = Observer()
         self.handler = handler
         self.directory = directory
+        add_script_run_ctx(t) # TODO: maybe a question to streamlit guys about how to do this or a separate thread every time to do ST display operation
 
-    def run(self):
-        self.observer.schedule(
-            self.handler, self.directory, recursive=True)
+    def start(self):
+        self.observer.schedule(self.handler, self.directory, recursive=False)
         self.observer.start()
-        print("\nWatcher Running in {}/\n".format(self.directory))
-        try:
-            while True:
-                time.sleep(1)
-        except:
-            self.observer.stop()
-        self.observer.join()
-        print("\nWatcher Terminated\n")
+
+    def stop(self):
+        self.observer.stop()
+
+    def join(self):
+        self.observer.join()    
+
+    # def run(self):
+    #     self.observer.schedule(
+    #         self.handler, self.directory, recursive=True)
+    #     self.observer.start()
+    #     print("\nWatcher Running in {}/\n".format(self.directory))
+    #     try:
+    #         while True:
+    #             time.sleep(1)
+    #     except:
+    #         self.observer.stop()
+    #     self.observer.join()
+    #     print("\nWatcher Terminated\n")
         
-class MyHandler(FileSystemEventHandler):
+        
+def process_result(filename):
+    st.write(filename)
+        
+class SoundFileHandler(FileSystemEventHandler):
 
     def on_any_event(self, event):
       print(event)
       if event.event_type == "created":
           process_audio(event.src_path)
+            
+class ResultFileHandler(FileSystemEventHandler):
+
+    def on_any_event(self, event):
+      print(event)
+      if event.event_type == "created":
+          process_result(event.src_path)
+            
             
 def streamlit_writer():
     # TODO read the result files and display them pretty
@@ -109,11 +132,26 @@ def streamlit_writer():
 
 t = threading.Thread(target=streamlit_writer)
 add_script_run_ctx(t)
-t.start()
-
-w = Watcher("G:\\temp\\ef03cba74b5fdb0b12e810f54919925d", MyHandler())
-w.run()
-
+#t.start()
 
 if __name__ == '__main__':
+  
+  w1 = Watcher("G:\\temp\\322717bbfdd19e262e6c2c9ad8296e2c", SoundFileHandler())
+  w2 = Watcher("g:\\temp", ResultFileHandler())
+
+  w2.start()
+  w1.start()
+
+  try:
+    while True:
+      time.sleep(5)
+  except:
+    w1.stop()
+    w2.stop()
+    print("error")
+    
+  w1.join()
+  w2.join()
+  
+  
   process_audio(sys.argv[1:])

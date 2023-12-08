@@ -35,6 +35,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from threading import Thread
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
+from pprint import pformat
 
 def process_audio(file_name):
     graph = tf.Graph()
@@ -130,14 +131,16 @@ def printer_thread():
   while True:
     time.sleep(1)
     if result_filename != "":
-      print("printing")
-      st.write(result_filename)
+      with open(result_filename) as file:
+        lines = [line.rstrip() for line in file]
+      outputdata = pformat(lines)
+      st.write(outputdata)
       result_filename = ""
     
 
 if __name__ == '__main__':
   
-  result_filename = "fister"
+  result_filename = str()
 
   t = Thread(target=printer_thread)
   add_script_run_ctx(t)

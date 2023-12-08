@@ -136,7 +136,7 @@ def printer_thread():
       outputdata = pformat(lines)
       st.write(outputdata)
       result_filename = ""
-    
+     
 
 if __name__ == '__main__':
   

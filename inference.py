@@ -108,6 +108,7 @@ class Watcher:
 result_filename = ""
 
 def process_result(filename):
+  global result_filename
   result_filename=filename
         
 class SoundFileHandler(FileSystemEventHandler):
@@ -125,17 +126,18 @@ class ResultFileHandler(FileSystemEventHandler):
             
 
 def printer_thread():
+  global result_filename
   while True:
     time.sleep(1)
     if result_filename != "":
       print("printing")
-      st.write(filename)
+      st.write(result_filename)
       result_filename = ""
     
 
 if __name__ == '__main__':
   
-  result_filename = str()
+  result_filename = "fister"
 
   t = Thread(target=printer_thread)
   add_script_run_ctx(t)

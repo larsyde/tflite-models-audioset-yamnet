@@ -133,6 +133,7 @@ def printer_thread():
     if result_filename != "":
       with open(result_filename) as file:
         lines = [line.rstrip() for line in file]
+        
       outputdata = pformat(lines)
       st.write(outputdata)
       result_filename = ""
